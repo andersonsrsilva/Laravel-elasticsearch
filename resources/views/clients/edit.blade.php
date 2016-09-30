@@ -4,16 +4,18 @@
     <div class="container">
         <h3>Editar cliente</h3>
 
-        {!! Form::open(['route'=>['clients.update', $client['_id']], 'class'=>'form']) !!}
+        {!! Form::open(['route'=>['clients.update', 1], 'class'=>'form']) !!}
+        {{ csrf_field() }}
         {{ method_field('PUT') }}
+
         <div class="form-group">
             {!! Form::label('name', 'Nome:') !!}
-            {!! Form::text('name', $client['_source']['name'], ['class'=>'form-control']) !!}
+            {!! Form::text('name', null, ['class'=>'form-control']) !!}
         </div>
 
         <div class="form-group">
             {!! Form::label('cpf', 'CPF:') !!}
-            {!! Form::text('cpf', $client['_source']['cpf'], ['class'=>'form-control']) !!}
+            {!! Form::text('cpf', null, ['class'=>'form-control']) !!}
         </div>
 
         <div class="form-group">

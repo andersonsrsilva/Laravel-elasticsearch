@@ -18,16 +18,16 @@
             </thead>
 
             <tbody>
-            @foreach($clients['hits']['hits'] as $client)
+            @foreach([] as $client)
                 <tr>
-                    <td>{{$client['_id']}}</td>
-                    <td>{{$client['_source']['name']}}</td>
-                    <td>{{$client['_source']['cpf']}}</td>
+                    <td></td>
+                    <td></td>
+                    <td>}</td>
                     <td>
-                        <a href="{{route('clients.edit',['id'=> $client['_id']])}}" class="btn btn-default btn-sm">
+                        <a href="{{route('clients.edit',['id'=> 1])}}" class="btn btn-default btn-sm">
                             Editar
                         </a>
-                        <a href="{{route('clients.delete',['id'=> $client['_id']])}}" class="btn btn-default btn-sm">
+                        <a href="{{route('clients.destroy',['id'=> 1])}}" class="btn btn-default btn-sm">
                             Excluir
                         </a>
                     </td>
