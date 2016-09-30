@@ -16,3 +16,5 @@ Route::get('/', function () {
 });
 
 Route::resource('clients', 'ClientsController');
+
+Route::get('clients/{clients}/destroy', 'ClientsController@destroy')->name('clients.delete');
