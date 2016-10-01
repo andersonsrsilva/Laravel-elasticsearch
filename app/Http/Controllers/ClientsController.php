@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use Elasticsearch\Client;
+use Elasticsearch\Common\Exceptions\Missing404Exception;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ClientsController extends Controller
 {
@@ -49,18 +51,24 @@ class ClientsController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->all();
+        unset($data['_token']);
+        $this->elasticParams['body'] = $data;
+        $this->elasticParams['refresh'] = true;
+        $this->client->create($this->elasticParams);
+
+        return redirect()->route('clients.index');
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -71,34 +79,61 @@ class ClientsController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
     {
-        return view('clients.edit');
+        try {
+            $this->elasticParams['id'] = $id;
+            $client = $this->client->get($this->elasticParams);
+        } catch (Missing404Exception $e) {
+            throw new NotFoundHttpException("Client not found");
+        }
+
+        return view('clients.edit', compact('client'));
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \Illuminate\Http\Request $request
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->elasticParams['id'] = $id;
+        if(!$this->client->exists($this->elasticParams)) {
+            throw new NotFoundHttpException("Client not found");
+        }
+
+        $data = $request->all();
+        unset($data['_token']);
+        unset($data['_method']);
+        $this->elasticParams['refresh'] = true;
+        $this->elasticParams['body']['doc'] = $data;
+        $this->client->update($this->elasticParams);
+
+        return redirect()->route('clients.index');
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
-        //
+        $this->elasticParams['id'] = $id;
+        if(!$this->client->exists($this->elasticParams)) {
+            throw new NotFoundHttpException("Client not found");
+        }
+
+        $this->elasticParams['refresh'] = true;
+        $this->client->delete($this->elasticParams);
+
+        return redirect()->route('clients.index');
     }
 }

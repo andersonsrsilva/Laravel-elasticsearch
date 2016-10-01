@@ -11,8 +11,9 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+
+Route::get('/', function() {
+    return redirect('/clients');
 });
 
 Route::resource('clients', 'ClientsController');
